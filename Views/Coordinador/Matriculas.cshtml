@@ -1,0 +1,83 @@
+@model SistemaCursos.Models.CoordinadorCursoMatriculasViewModel
+
+@{
+    ViewData["Title"] = "Matrículas del curso";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h2 mb-1">@Model.CursoNombre</h1>
+        <p class="text-muted mb-0">
+            @Model.CursoCodigo | Activas: @Model.MatriculasActivas / @Model.CupoMaximo
+        </p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">Volver al panel</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h4">Solicitudes y matrículas</h2>
+        @if (Model.Matriculas.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Estado</th>
+                            <th>Fecha de solicitud</th>
+                            <th>Fecha de aprobación</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var matricula in Model.Matriculas)
+                    {
+                        <tr>
+                            <td>@matricula.EstudianteEmail</td>
+                            <td>@matricula.Estado</td>
+                            <td>@matricula.FechaMatricula.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@(matricula.FechaAprobacion?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                    @if (matricula.Estado == SistemaCursos.Models.EstadoMatricula.Pendiente)
+                                    {
+                                        <form asp-action="Confirmar" asp-route-id="@matricula.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
+                                        </form>
+                                    }
+
+                                    @if (matricula.Estado != SistemaCursos.Models.EstadoMatricula.Cancelada)
+                                    {
+                                        <form asp-action="Cancelar" asp-route-id="@matricula.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0">
+                Este curso todavía no tiene matrículas registradas.
+            </div>
+        }
+    </div>
+</div>

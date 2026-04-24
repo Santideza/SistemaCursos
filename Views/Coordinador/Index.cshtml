@@ -1,0 +1,119 @@
+@model SistemaCursos.Models.CoordinadorDashboardViewModel
+
+@{
+    ViewData["Title"] = "Panel Coordinador";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 mb-1">Panel Coordinador</h1>
+        <p class="text-muted mb-0">Administra cursos y revisa el estado de las matrículas.</p>
+    </div>
+    <a asp-action="Crear" class="btn btn-primary">Crear curso</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted">Total de cursos</div>
+                <div class="display-6">@Model.TotalCursos</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted">Cursos activos</div>
+                <div class="display-6">@Model.CursosActivos</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted">Matrículas pendientes</div>
+                <div class="display-6">@Model.MatriculasPendientes</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h4">Cursos</h2>
+        @if (Model.Cursos.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Horario</th>
+                            <th>Estado</th>
+                            <th>Matrículas</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var curso in Model.Cursos)
+                    {
+                        <tr>
+                            <td>@curso.Codigo</td>
+                            <td>
+                                <div class="fw-semibold">@curso.Nombre</div>
+                                <div class="text-muted">@curso.Creditos créditos - cupo @curso.CupoMaximo</div>
+                            </td>
+                            <td>@curso.HoraInicio:00 - @curso.HoraFin:00</td>
+                            <td>
+                                @if (curso.Activo)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </td>
+                            <td>
+                                <div>Activas: @curso.MatriculasActivas</div>
+                                <div>Pendientes: @curso.MatriculasPendientes</div>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                    <a asp-action="Editar" asp-route-id="@curso.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                                    <a asp-action="Matriculas" asp-route-cursoId="@curso.Id" class="btn btn-sm btn-outline-dark">Matrículas</a>
+                                    @if (curso.Activo)
+                                    {
+                                        <form asp-action="Desactivar" asp-route-id="@curso.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Desactivar</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0">
+                No hay cursos registrados todavía.
+            </div>
+        }
+    </div>
+</div>

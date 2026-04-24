@@ -1,8 +1,110 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model SistemaCursos.Models.HomeInicioViewModel
+
+@{
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="p-5 mb-4 bg-light rounded-3 border">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold">Sistema de Cursos</h1>
+        <p class="col-lg-8 fs-5">
+            Gestiona la oferta académica, revisa disponibilidad e inscríbete en los cursos activos desde una sola plataforma.
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-primary btn-lg" asp-controller="Cursos" asp-action="Index">Ver catálogo</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Manage/Index">Mi cuenta</a>
+            }
+            else
+            {
+                <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Login">Iniciar sesión</a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Cursos activos</h2>
+                <p class="display-6 mb-0">@Model.CursosActivos</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Cursos con cupo</h2>
+                <p class="display-6 mb-0">@Model.CursosConCupo</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Matrículas pendientes</h2>
+                <p class="display-6 mb-0">@Model.MatriculasPendientes</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h4 mb-0">Cursos destacados</h2>
+                    <a asp-controller="Cursos" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                </div>
+
+                @if (Model.CursosDestacados.Any())
+                {
+                    <div class="row g-3">
+                        @foreach (var curso in Model.CursosDestacados)
+                        {
+                            var inscritos = curso.Matriculas.Count(m => m.Estado != SistemaCursos.Models.EstadoMatricula.Cancelada);
+
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-primary">@curso.Codigo</span>
+                                        <span class="text-muted">@curso.Creditos créditos</span>
+                                    </div>
+                                    <h3 class="h5">@curso.Nombre</h3>
+                                    <p class="mb-1">Horario: @curso.HoraInicio:00 - @curso.HoraFin:00</p>
+                                    <p class="mb-3">Inscritos: @inscritos / @curso.CupoMaximo</p>
+                                    <a asp-controller="Cursos" asp-action="Detalle" asp-route-id="@curso.Id" class="btn btn-outline-dark btn-sm">Ver detalle</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        No hay cursos activos para mostrar en este momento.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h4">Accesos rápidos</h2>
+                <div class="list-group list-group-flush">
+                    <a class="list-group-item list-group-item-action" asp-controller="Cursos" asp-action="Index">Explorar cursos</a>
+                    <a class="list-group-item list-group-item-action" asp-area="Identity" asp-page="/Account/Register">Crear cuenta</a>
+                    @if (User.IsInRole("Coordinador"))
+                    {
+                        <a class="list-group-item list-group-item-action" asp-controller="Coordinador" asp-action="Index">Panel Coordinador</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

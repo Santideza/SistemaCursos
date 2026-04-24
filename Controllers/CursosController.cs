@@ -59,7 +59,9 @@ public class CursosController : Controller
     public async Task<IActionResult> Detalle(int? id)
     {
         if (id == null)
+        {
             return NotFound();
+        }
 
         var curso = await _context.Cursos
             .AsNoTracking()
@@ -67,11 +69,59 @@ public class CursosController : Controller
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (curso == null)
+        {
             return NotFound();
+        }
 
         await GuardarUltimoCursoAsync(curso);
 
+        var usuario = await _userManager.GetUserAsync(User);
+        if (usuario != null)
+        {
+            ViewBag.YaMatriculado = await _context.Matriculas.AnyAsync(m =>
+                m.UserId == usuario.Id &&
+                m.CursoId == curso.Id &&
+                m.Estado != EstadoMatricula.Cancelada);
+        }
+
         return View(curso);
+    }
+
+    [Authorize]
+    public async Task<IActionResult> MisMatriculas()
+    {
+        var usuario = await _userManager.GetUserAsync(User);
+        if (usuario == null)
+        {
+            return Challenge();
+        }
+
+        var matriculas = await _context.Matriculas
+            .AsNoTracking()
+            .Where(m => m.UserId == usuario.Id && m.Estado != EstadoMatricula.Cancelada)
+            .Include(m => m.Curso)
+            .OrderByDescending(m => m.FechaMatricula)
+            .Select(m => new MiMatriculaItemViewModel
+            {
+                MatriculaId = m.Id,
+                CursoId = m.CursoId,
+                CursoCodigo = m.Curso != null ? m.Curso.Codigo : string.Empty,
+                CursoNombre = m.Curso != null ? m.Curso.Nombre : string.Empty,
+                Creditos = m.Curso != null ? m.Curso.Creditos : 0,
+                Estado = m.Estado,
+                FechaMatricula = m.FechaMatricula,
+                FechaAprobacion = m.FechaAprobacion,
+                HoraInicio = m.Curso != null ? m.Curso.HoraInicio : 0,
+                HoraFin = m.Curso != null ? m.Curso.HoraFin : 0
+            })
+            .ToListAsync();
+
+        var model = new MisMatriculasViewModel
+        {
+            Matriculas = matriculas
+        };
+
+        return View(model);
     }
 
     [HttpPost]

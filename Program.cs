@@ -20,7 +20,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options => {
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.AccessDeniedPath = "/Home/AccessDenied";
 });
 
 // ✅ Redis remoto (RedisLabs) — sin Docker
