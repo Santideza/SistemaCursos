@@ -25,7 +25,7 @@ namespace SistemaCursos.Data
             .ToTable(t =>
             {
                 t.HasCheckConstraint("CK_Curso_Creditos", "Creditos > 0");
-                t.HasCheckConstraint("CK_Curso_Horario", "HorarioInicio < HorarioFin");
+                t.HasCheckConstraint("CK_Curso_Horario", "HoraInicio < HoraFin");
             });
         }
     }
