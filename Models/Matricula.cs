@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 namespace SistemaCursos.Models;
 
@@ -20,12 +21,14 @@ public class Matricula
     public string UserId { get; set; } = string.Empty;
 
     [ForeignKey("UserId")]
+    [JsonIgnore]
     public IdentityUser? User { get; set; }
 
     [Required]
     public int CursoId { get; set; }
 
     [ForeignKey("CursoId")]
+    [JsonIgnore]
     public Curso? Curso { get; set; }
 
     [Required]

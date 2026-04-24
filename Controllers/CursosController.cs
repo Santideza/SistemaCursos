@@ -2,27 +2,39 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using SistemaCursos.Data;
 using SistemaCursos.Models;
+using System.Text.Json;
 
 namespace SistemaCursos.Controllers;
 
 public class CursosController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IDistributedCache _cache;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public CursosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    public CursosController(
+        ApplicationDbContext context,
+        IDistributedCache cache,
+        UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _cache = cache;
         _userManager = userManager;
     }
 
-    // ✅ LISTA + FILTRO
     public async Task<IActionResult> Index(string? search, int? creditos)
     {
+        var ultimoCursoJson = await _cache.GetStringAsync(ObtenerClaveUltimoCurso());
+        if (!string.IsNullOrWhiteSpace(ultimoCursoJson))
+        {
+            ViewBag.UltimoCursoVisitado = JsonSerializer.Deserialize<UltimoCursoDto>(ultimoCursoJson);
+        }
+
         var query = _context.Cursos
-            .AsNoTracking() // 🔥 mejora rendimiento
+            .AsNoTracking()
             .Where(c => c.Activo);
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -44,7 +56,6 @@ public class CursosController : Controller
         return View(cursos);
     }
 
-    // ✅ DETALLE
     public async Task<IActionResult> Detalle(int? id)
     {
         if (id == null)
@@ -58,15 +69,15 @@ public class CursosController : Controller
         if (curso == null)
             return NotFound();
 
+        await GuardarUltimoCursoAsync(curso);
+
         return View(curso);
     }
 
-    // ✅ INSCRIBIR
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Inscribir(int cursoId)
     {
-        // Obtener usuario autenticado
         var usuario = await _userManager.GetUserAsync(User);
         if (usuario == null)
         {
@@ -74,7 +85,6 @@ public class CursosController : Controller
             return RedirectToAction(nameof(Detalle), new { id = cursoId });
         }
 
-        // Obtener curso
         var curso = await _context.Cursos
             .Include(c => c.Matriculas)
             .FirstOrDefaultAsync(c => c.Id == cursoId);
@@ -85,7 +95,6 @@ public class CursosController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Validación 1: Verificar si el usuario ya está matriculado
         var yaMatriculado = await _context.Matriculas
             .AnyAsync(m => m.UserId == usuario.Id && m.CursoId == cursoId && m.Estado != EstadoMatricula.Cancelada);
 
@@ -95,7 +104,6 @@ public class CursosController : Controller
             return RedirectToAction(nameof(Detalle), new { id = cursoId });
         }
 
-        // Validación 2: No superar el cupo máximo
         var matriculasActivas = curso.Matriculas.Count(m => m.Estado != EstadoMatricula.Cancelada);
         if (matriculasActivas >= curso.CupoMaximo)
         {
@@ -103,7 +111,6 @@ public class CursosController : Controller
             return RedirectToAction(nameof(Detalle), new { id = cursoId });
         }
 
-        // Validación 3: No solaparse con otro curso en el mismo horario
         var cursosDelUsuario = await _context.Matriculas
             .Where(m => m.UserId == usuario.Id && m.Estado != EstadoMatricula.Cancelada)
             .Include(m => m.Curso)
@@ -112,9 +119,12 @@ public class CursosController : Controller
         bool hayConflicto = cursosDelUsuario.Any(m =>
         {
             var cursoExistente = m.Curso;
-            if (cursoExistente == null) return false;
-            // Verificar si los horarios se solapan
-            return (curso.HoraInicio < cursoExistente.HoraFin && curso.HoraFin > cursoExistente.HoraInicio);
+            if (cursoExistente == null)
+            {
+                return false;
+            }
+
+            return curso.HoraInicio < cursoExistente.HoraFin && curso.HoraFin > cursoExistente.HoraInicio;
         });
 
         if (hayConflicto)
@@ -123,7 +133,6 @@ public class CursosController : Controller
             return RedirectToAction(nameof(Detalle), new { id = cursoId });
         }
 
-        // Crear nueva matrícula
         var matricula = new Matricula
         {
             UserId = usuario.Id,
@@ -137,5 +146,27 @@ public class CursosController : Controller
 
         TempData["Success"] = "¡Te has inscrito correctamente! Tu solicitud está en estado Pendiente.";
         return RedirectToAction(nameof(Detalle), new { id = cursoId });
+    }
+
+    private async Task GuardarUltimoCursoAsync(Curso curso)
+    {
+        var ultimoCurso = new UltimoCursoDto
+        {
+            Id = curso.Id,
+            Nombre = curso.Nombre
+        };
+
+        await _cache.SetStringAsync(
+            ObtenerClaveUltimoCurso(),
+            JsonSerializer.Serialize(ultimoCurso),
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+            });
+    }
+
+    private string ObtenerClaveUltimoCurso()
+    {
+        return $"ultimo-curso:{HttpContext.Session.Id}";
     }
 }
