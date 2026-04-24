@@ -66,7 +66,12 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// En Render el HTTPS público termina en el proxy, así que evitamos este redirect interno en producción.
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -86,15 +91,45 @@ app.MapRazorPages()
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+
     try
     {
+        EnsureSqliteDirectoryExists(connectionString);
+        await context.Database.MigrateAsync();
         await SeedData.Initialize(services);
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred seeding the DB.");
+        logger.LogError(ex, "An error occurred initializing the database.");
     }
 }
 
 app.Run();
+
+static void EnsureSqliteDirectoryExists(string connectionString)
+{
+    const string dataSourcePrefix = "DataSource=";
+
+    var segment = connectionString
+        .Split(';', StringSplitOptions.RemoveEmptyEntries)
+        .FirstOrDefault(part => part.StartsWith(dataSourcePrefix, StringComparison.OrdinalIgnoreCase));
+
+    if (string.IsNullOrWhiteSpace(segment))
+    {
+        return;
+    }
+
+    var dbPath = segment[dataSourcePrefix.Length..].Trim();
+    if (string.IsNullOrWhiteSpace(dbPath))
+    {
+        return;
+    }
+
+    var directory = Path.GetDirectoryName(dbPath);
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+}
