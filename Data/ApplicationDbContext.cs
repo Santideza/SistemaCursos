@@ -12,6 +12,7 @@ namespace SistemaCursos.Data
         }
 
         public DbSet<Curso> Cursos { get; set; }
+        public DbSet<Matricula> Matriculas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
