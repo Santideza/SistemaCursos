@@ -19,18 +19,28 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(options => {
-    options.AccessDeniedPath = "/Account/AccessDenied";
-});
-
-// ✅ Redis remoto (RedisLabs) — sin Docker
-builder.Services.AddStackExchangeRedisCache(options =>
+builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-    options.InstanceName = "SistemaCursos:";
+    options.AccessDeniedPath = "/Home/AccessDenied";
 });
 
-// ✅ Sesión backed por Redis
+var redisConnection =
+    builder.Configuration.GetConnectionString("Redis") ??
+    builder.Configuration["Redis:ConnectionString"];
+
+if (!string.IsNullOrWhiteSpace(redisConnection))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConnection;
+        options.InstanceName = "SistemaCursos:";
+    });
+}
+else
+{
+    builder.Services.AddDistributedMemoryCache();
+}
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -61,8 +71,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-// ✅ IMPORTANTE: antes de MapControllerRoute
 app.UseSession();
 
 app.MapStaticAssets();

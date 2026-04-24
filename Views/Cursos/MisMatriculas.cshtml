@@ -1,0 +1,59 @@
+﻿@model SistemaCursos.Models.MisMatriculasViewModel
+
+@{
+    ViewData["Title"] = "Mis matrículas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 mb-1">Mis matrículas</h1>
+        <p class="text-muted mb-0">Aquí puedes ver los cursos en los que ya estás inscrito o pendientes de aprobación.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">Ver catálogo</a>
+</div>
+
+@if (Model.Matriculas.Any())
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Horario</th>
+                            <th>Estado</th>
+                            <th>Solicitud</th>
+                            <th>Aprobación</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var matricula in Model.Matriculas)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@matricula.CursoNombre</div>
+                                <div class="text-muted">@matricula.CursoCodigo - @matricula.Creditos créditos</div>
+                            </td>
+                            <td>@matricula.HoraInicio:00 - @matricula.HoraFin:00</td>
+                            <td>@matricula.Estado</td>
+                            <td>@matricula.FechaMatricula.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@(matricula.FechaAprobacion?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            <td class="text-end">
+                                <a asp-action="Detalle" asp-route-id="@matricula.CursoId" class="btn btn-sm btn-outline-primary">Ver curso</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        Aún no tienes matrículas registradas.
+    </div>
+}
