@@ -10,12 +10,11 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-SistemaCursos-db45a78b-2f6b-403d-8692-dc4350f3f287")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaCursos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8ba9480f829644ae7bf2dee016e994532fc04ae4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+72d63d1c237c2f5806a683bf75baefd13a3f1b87")]
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaCursos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaCursos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
