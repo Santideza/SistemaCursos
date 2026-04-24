@@ -13,7 +13,6 @@ C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\appset
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\appsettings.json
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\SistemaCursos.staticwebassets.runtime.json
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\SistemaCursos.staticwebassets.endpoints.json
-C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\app.db
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\SistemaCursos.exe
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\SistemaCursos.deps.json
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\SistemaCursos.runtimeconfig.json
@@ -280,3 +279,4 @@ C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\obj\Debug\net10.0\refint
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\obj\Debug\net10.0\SistemaCursos.pdb
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\obj\Debug\net10.0\SistemaCursos.genruntimeconfig.cache
 C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\obj\Debug\net10.0\ref\SistemaCursos.dll
+C:\Users\Santiago\Desktop\TrabajosGeneral\SistemaCursos\bin\Debug\net10.0\app.db

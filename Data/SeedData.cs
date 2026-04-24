@@ -37,21 +37,21 @@ public static class SeedData
         {
             context.Cursos.AddRange(
                 new Curso {
-                    Codigo = "CS101",
-                    Nombre = "Introducción a la Programación",
-                    Creditos = 3,
-                    CupoMaximo = 30,
-                    HorarioInicio = new TimeOnly(9, 0),
-                    HorarioFin = new TimeOnly(11, 0),
-                    Activo = true
+                Codigo = "CS101",
+                Nombre = "Introducción a la Programación",
+                Creditos = 3,
+                CupoMaximo = 30,
+                HoraInicio = 9,
+                HoraFin = 11,
+                Activo = true
                 },
                 new Curso {
                     Codigo = "BD201",
                     Nombre = "Bases de Datos",
                     Creditos = 4,
                     CupoMaximo = 25,
-                    HorarioInicio = new TimeOnly(11, 0),
-                    HorarioFin = new TimeOnly(13, 0),
+                    HoraInicio = 11,
+                    HoraFin = 13,
                     Activo = true
                 },
                 new Curso {
@@ -59,8 +59,8 @@ public static class SeedData
                     Nombre = "Desarrollo Web",
                     Creditos = 3,
                     CupoMaximo = 28,
-                    HorarioInicio = new TimeOnly(14, 0),
-                    HorarioFin = new TimeOnly(16, 0),
+                    HoraInicio = 14,
+                    HoraFin = 16,
                     Activo = true
                 }
             );
@@ -94,7 +94,8 @@ public static class SeedData
             {
                 await userManager.AddToRoleAsync(user, rol);
 
-                await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("Nombre", $"{nombre} {apellido}"));
+                await userManager.AddClaimAsync(user,
+                    new System.Security.Claims.Claim("Nombre", $"{nombre} {apellido}"));
             }
         }
         else

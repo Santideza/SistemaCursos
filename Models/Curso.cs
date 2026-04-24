@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCursos.Models;
 
@@ -27,17 +26,18 @@ public class Curso
     [Display(Name = "Cupo Máximo")]
     public int CupoMaximo { get; set; }
 
-    [Required(ErrorMessage = "El horario de inicio es obligatorio")]
-    [Display(Name = "Horario Inicio")]
-    public TimeOnly HorarioInicio { get; set; }
+    [Required(ErrorMessage = "La hora de inicio es obligatoria")]
+    [Range(0, 23, ErrorMessage = "Debe estar entre 0 y 23")]
+    [Display(Name = "Hora Inicio")]
+    public int HoraInicio { get; set; }
 
-    [Required(ErrorMessage = "El horario de fin es obligatorio")]
-    [Display(Name = "Horario Fin")]
-    public TimeOnly HorarioFin { get; set; }
+    [Required(ErrorMessage = "La hora de fin es obligatoria")]
+    [Range(1, 24, ErrorMessage = "Debe estar entre 1 y 24")]
+    [Display(Name = "Hora Fin")]
+    public int HoraFin { get; set; }
 
     [Display(Name = "Activo")]
     public bool Activo { get; set; } = true;
 
-    // Relación con matrículas
     public ICollection<Matricula> Matriculas { get; set; } = new List<Matricula>();
 }
