@@ -1,0 +1,20 @@
+[1mdiff --git a/obj/Debug/net10.0/SistemaCursos.AssemblyInfo.cs b/obj/Debug/net10.0/SistemaCursos.AssemblyInfo.cs[m
+[1mindex 78bbd76..bb78627 100644[m
+[1m--- a/obj/Debug/net10.0/SistemaCursos.AssemblyInfo.cs[m
+[1m+++ b/obj/Debug/net10.0/SistemaCursos.AssemblyInfo.cs[m
+[36m@@ -15,7 +15,7 @@[m [musing System.Reflection;[m
+ [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaCursos")][m
+ [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")][m
+ [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")][m
+[31m-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")][m
+[32m+[m[32m[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8246131e98a150b9234227c068e4ef07b5b01e18")][m
+ [assembly: System.Reflection.AssemblyProductAttribute("SistemaCursos")][m
+ [assembly: System.Reflection.AssemblyTitleAttribute("SistemaCursos")][m
+ [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")][m
+[1mdiff --git a/obj/Debug/net10.0/SistemaCursos.AssemblyInfoInputs.cache b/obj/Debug/net10.0/SistemaCursos.AssemblyInfoInputs.cache[m
+[1mindex 3889e6a..59de9b0 100644[m
+[1m--- a/obj/Debug/net10.0/SistemaCursos.AssemblyInfoInputs.cache[m
+[1m+++ b/obj/Debug/net10.0/SistemaCursos.AssemblyInfoInputs.cache[m
+[36m@@ -1 +1 @@[m
+[31m-f8316bce6df5532b8c1d308dfa409cf1fdd3552811c1d51ad5dee64b0558cbda[m
+[32m+[m[32mf918aef35a0934e3283a994b51f2a718a677d89b6ceb8a304e252db2419f6dea[m
